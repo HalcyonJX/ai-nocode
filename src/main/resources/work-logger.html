@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工作记录小工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+
+        .form-container {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .records-container {
+            margin-top: 20px;
+        }
+
+        .record-item {
+            background-color: white;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+            transition: box-shadow 0.3s;
+        }
+
+        .record-item:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .record-title {
+            font-weight: 600;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+
+        .record-date {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .record-category {
+            display: inline-block;
+            padding: 3px 8px;
+            background-color: #e1f5fe;
+            color: #0288d1;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+
+        .record-description {
+            margin-top: 10px;
+            color: #555;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+        }
+
+        .empty-state p {
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .record-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>工作记录小工具</h1>
+        <p class="description">简单记录您的工作内容和进展</p>
+    </header>
+
+    <div class="form-container">
+        <form id="work-record-form">
+            <div class="form-group">
+                <label for="title">工作标题</label>
+                <input type="text" id="title" placeholder="例如：完成项目报告" required>
+            </div>
+
+            <div class="form-group">
+                <label for="category">工作类别</label>
+                <select id="category">
+                    <option value="开发">开发</option>
+                    <option value="设计">设计</option>
+                    <option value="测试">测试</option>
+                    <option value="会议">会议</option>
+                    <option value="文档">文档</option>
+                    <option value="其他">其他</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">工作内容</label>
+                <textarea id="description" placeholder="详细描述您的工作内容..." required></textarea>
+            </div>
+
+            <button type="submit">添加工作记录</button>
+        </form>
+    </div>
+
+    <div class="stats">
+        <div class="stat-item">
+            <div class="stat-value" id="total-records">0</div>
+            <div class="stat-label">总记录数</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="today-records">0</div>
+            <div class="stat-label">今日记录</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="week-records">0</div>
+            <div class="stat-label">本周记录</div>
+        </div>
+    </div>
+
+    <div class="records-container" id="records-list">
+        <!-- 记录将在这里动态生成 -->
+        <div class="empty-state">
+            <p>暂无工作记录</p>
+            <p>添加第一条工作记录开始使用吧！</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 工作记录数据
+    let workRecords = JSON.parse(localStorage.getItem('workRecords')) || [];
+
+    // DOM 元素
+    const form = document.getElementById('work-record-form');
+    const recordsList = document.getElementById('records-list');
+    const totalRecordsEl = document.getElementById('total-records');
+    const todayRecordsEl = document.getElementById('today-records');
+    const weekRecordsEl = document.getElementById('week-records');
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        updateStats();
+        renderRecords();
+    });
+
+    // 表单提交事件
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const title = document.getElementById('title').value;
+        const category = document.getElementById('category').value;
+        const description = document.getElementById('description').value;
+
+        // 创建新记录
+        const newRecord = {
+            id: Date.now(),
+            title: title,
+            category: category,
+            description: description,
+            date: new Date().toISOString()
+        };
+
+        // 添加到记录数组
+        workRecords.unshift(newRecord);
+
+        // 保存到本地存储
+        saveRecords();
+
+        // 更新UI
+        updateStats();
+        renderRecords();
+
+        // 重置表单
+        form.reset();
+    });
+
+    // 保存记录到本地存储
+    function saveRecords() {
+        localStorage.setItem('workRecords', JSON.stringify(workRecords));
+    }
+
+    // 更新统计信息
+    function updateStats() {
+        const today = new Date().toDateString();
+        const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+        const todayRecords = workRecords.filter(record => {
+            const recordDate = new Date(record.date).toDateString();
+            return recordDate === today;
+        });
+
+        const weekRecords = workRecords.filter(record => {
+            const recordDate = new Date(record.date);
+            return recordDate >= oneWeekAgo;
+        });
+
+        totalRecordsEl.textContent = workRecords.length;
+        todayRecordsEl.textContent = todayRecords.length;
+        weekRecordsEl.textContent = weekRecords.length;
+    }
+
+    // 渲染记录列表
+    function renderRecords() {
+        if (workRecords.length === 0) {
+            recordsList.innerHTML = `
+                    <div class="empty-state">
+                        <p>暂无工作记录</p>
+                        <p>添加第一条工作记录开始使用吧！</p>
+                    </div>
+                `;
+            return;
+        }
+
+        recordsList.innerHTML = '';
+
+        workRecords.forEach(record => {
+            const recordDate = new Date(record.date);
+            const formattedDate = `${recordDate.getFullYear()}-${(recordDate.getMonth() + 1).toString().padStart(2, '0')}-${recordDate.getDate().toString().padStart(2, '0')} ${recordDate.getHours().toString().padStart(2, '0')}:${recordDate.getMinutes().toString().padStart(2, '0')}`;
+
+            const recordElement = document.createElement('div');
+            recordElement.className = 'record-item';
+            recordElement.innerHTML = `
+                    <div class="record-header">
+                        <div class="record-title">${record.title}</div>
+                        <div class="record-date">${formattedDate}</div>
+                    </div>
+                    <div>
+                        <span class="record-category">${record.category}</span>
+                    </div>
+                    <div class="record-description">${record.description}</div>
+                    <button class="delete-btn" data-id="${record.id}">×</button>
+                `;
+
+            recordsList.appendChild(recordElement);
+        });
+
+        // 添加删除事件监听器
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = parseInt(this.getAttribute('data-id'));
+                deleteRecord(id);
+            });
+        });
+    }
+
+    // 删除记录
+    function deleteRecord(id) {
+        if (confirm('确定要删除这条记录吗？')) {
+            workRecords = workRecords.filter(record => record.id !== id);
+            saveRecords();
+            updateStats();
+            renderRecords();
+        }
+    }
+</script>
+</body>
+</html>
