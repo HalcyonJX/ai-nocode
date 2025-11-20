@@ -1,14 +1,15 @@
 package com.halcyon.ainocode.ai.core;
 
+import com.halcyon.ainocode.core.AiCodeGeneratorFacade;
 import com.halcyon.ainocode.model.enums.CodeGenTypeEnum;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import reactor.core.publisher.Flux;
 
 import java.io.File;
-
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
 
 @SpringBootTest
 class AiCodeGeneratorFacadeTest {
@@ -20,5 +21,16 @@ class AiCodeGeneratorFacadeTest {
     void generateAndSaveCode() {
         File file = aiCodeGeneratorFacade.generateAndSaveCode("每个文件不超过50行代码的任务记录网站", CodeGenTypeEnum.MULTI_FILE);
         Assertions.assertNotNull(file);
+    }
+
+    @Test
+    void generateAndSaveCodeStream() {
+        Flux<String> codeStream = aiCodeGeneratorFacade.generateAndSaveCodeStream("任务记录网站，不超过30行代码", CodeGenTypeEnum.MULTI_FILE);
+        // 阻塞等待所有数据收集完成
+        List<String> result = codeStream.collectList().block();
+        // 验证结果
+        Assertions.assertNotNull(result);
+        String completeContent = String.join("", result);
+        Assertions.assertNotNull(completeContent);
     }
 }

@@ -1,4 +1,4 @@
-package com.halcyon.ainocode.ai.core;
+package com.halcyon.ainocode.core;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
